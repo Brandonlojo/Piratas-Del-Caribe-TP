@@ -29,7 +29,7 @@ data Barco = Barco {
 data Isla = Isla {
   nombreIsla :: String,
   botinIsla :: [Tesoro]
-} deriving (Show)
+} deriving (Show  )
 
 -- Piratas
 jackSparrow = Pirata {  nombre = "Jack Sparrow", tesoros = [ Tesoro{ nombreTesoro ="brujula", valorTesoro =10000},
@@ -57,6 +57,9 @@ holandesErrante = Barco {nombreBarco = " Holandés Errante", tripulacion = [davi
 
 --Islas
 
+islaTortuga = Isla {nombreIsla = "Isla Tortuga", botinIsla = [Tesoro {nombreTesoro = "Frasco de arena", valorTesoro = 1}]}
+islaDelRon = Isla {nombreIsla = " Isla del Ron", botinIsla = [Tesoro {nombreTesoro = "Botella de Ron", valorTesoro = 25}]}
+
 
 
 --cantidad de tesoros
@@ -76,7 +79,7 @@ tienenMismoTesoro pirata1 pirata2 = any (compararTesoros (tesoros pirata2)) (tes
 -- tesoro mas valioso de un pirata
 tesoroMasValioso pirata = maximum ( map valorTesoro (tesoros pirata))
 
--- adquirir un nuevo tesoro
+-- adquirir un nuevo tesoro (se puede mejorar para cuando es lista de un tesoro o solo un tesoro (guardas))
 adquirirTesoro tesoro pirata = tesoro ++ tesoros pirata
 
 -- verificar si el tesoro es valioso
@@ -107,7 +110,11 @@ saquear pirata formaSaqueo tesoro | formaSaqueo  tesoro= agregarTesoro tesoro pi
 agregarATripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = pirata : (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
 sacarDeTripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = filter (/= pirata) (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
 
+anclarEnIsla isla barco = Barco {nombreBarco = (nombreBarco barco), tripulacion =map (generarNuevoPirata (botinIsla isla)) (tripulacion barco), formaDeSaqueoDelBarco = (formaDeSaqueoDelBarco barco)}
 
+generarNuevoPirata tesoro pirata = Pirata {nombre= (nombre pirata), tesoros = (adquirirTesoro tesoro pirata)}
+
+--atacarCiudad ciudad
 
 
 {-
