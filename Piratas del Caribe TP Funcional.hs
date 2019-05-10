@@ -26,7 +26,10 @@ data Barco = Barco {
   formaDeSaqueoDelBarco :: FormaDeSaqueo
 }deriving (Show)
 
-
+data Isla = Isla {
+  nombreIsla :: String,
+  botinIsla :: [Tesoro]
+} deriving (Show)
 
 -- Piratas
 jackSparrow = Pirata {  nombre = "Jack Sparrow", tesoros = [ Tesoro{ nombreTesoro ="brujula", valorTesoro =10000},
@@ -44,10 +47,15 @@ elizabethSwann = Pirata { nombre = "Elizabeth Swann", tesoros = [Tesoro {nombreT
                                                                                                             Tesoro {nombreTesoro = "espada de hierro", valorTesoro = 50}
                                                                                                             ]
                                         }
+
+willTurner = Pirata { nombre = " Will Turner", tesoros = [Tesoro {nombreTesoro = "cuchillo de su padre", valorTesoro = 5}]}
+
 --Barcos
 
 perlaNegra = Barco { nombreBarco = "Perla Negra", tripulacion = [jackSparrow, anneBonny], formaDeSaqueoDelBarco = formaDeSaqueoValioso}
 holandesErrante = Barco {nombreBarco = " Holandés Errante", tripulacion = [davidJones], formaDeSaqueoDelBarco = formaDeSaqueoValioso}
+
+--Islas
 
 
 
@@ -94,14 +102,22 @@ formaDeSaqueoCompleja listaDeFormas tesoro = any ($ tesoro) listaDeFormas
 saquear pirata formaSaqueo tesoro | formaSaqueo  tesoro= agregarTesoro tesoro pirata
                                                          | otherwise = pirata
 
+
+--Navegando los siete mares
+agregarATripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = pirata : (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
+sacarDeTripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = filter (/= pirata) (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
+
+
+
+
 {-
 Tests de Saqueos
 saquear anneBonny (formaDeSaqueoEspecifico "oro") Tesoro {nombreTesoro = "oro", valorTesoro = 100}
 saquear davidJones formaDeSaqueoConCorazon Tesoro {nombreTesoro = "oro", valorTesoro = 100}
 saquear jackSparrow (formaDeSaqueoCompleja [formaDeSaqueoValioso, (formaDeSaqueoEspecifico "sombrero")]) Tesoro {nombreTesoro = "oro", valorTesoro = 100}
 
--}
+ Tests de Barcos
+ agregarATripulacion perlaNegra elizabethSwann
+((flip sacarDeTripulacion willTurner).agregarATripulacion perlaNegra) willTurner
 
---Navegando los siete mares
-agregarATripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = pirata : (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
-sacarDeTripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = filter (/= pirata) (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
+ -}
