@@ -29,7 +29,7 @@ data Barco = Barco {
 data Isla = Isla {
   nombreIsla :: String,
   botinIsla :: [Tesoro]
-} deriving (Show  )
+} deriving (Show)
 
 -- Piratas
 jackSparrow = Pirata {  nombre = "Jack Sparrow", tesoros = [ Tesoro{ nombreTesoro ="brujula", valorTesoro =10000},
@@ -60,7 +60,14 @@ holandesErrante = Barco {nombreBarco = " Holandés Errante", tripulacion = [davi
 islaTortuga = Isla {nombreIsla = "Isla Tortuga", botinIsla = [Tesoro {nombreTesoro = "Frasco de arena", valorTesoro = 1}]}
 islaDelRon = Isla {nombreIsla = " Isla del Ron", botinIsla = [Tesoro {nombreTesoro = "Botella de Ron", valorTesoro = 25}]}
 
+--Ciudad
 
+portRoyal = Ciudad {nombreCiudad = "Port Royal", tesoros = [Tesoro {nombreTesoro = "Tierra", valorTesoro = 6},
+                                                                                                      Tesoro {nombreTesoro = "Joyas", valorTesoro = 2000},
+                                                                                                      Tesoro {nombreTesoro = "Armas", valorTesoro = 150},
+                                                                                                      Tesoro {nombreTesoro = "Ropa", valorTesoro = 50}
+                                                                                                    }
+ciudadMediana = Ciudad {nombreCiudad = "Ciudad Mediana", tesoros = [Tesoro {nombreTesoro = "Joyas", valorTesoro = 2000}]}
 
 --cantidad de tesoros
 cantidadDeTesoros pirata = (length.tesoros) pirata
@@ -114,7 +121,12 @@ anclarEnIsla isla barco = Barco {nombreBarco = (nombreBarco barco), tripulacion 
 
 generarNuevoPirata tesoro pirata = Pirata {nombre= (nombre pirata), tesoros = (adquirirTesoro tesoro pirata)}
 
---atacarCiudad ciudad
+
+ciudadConTesorosDeSobra ciudad barco =
+
+any (formaDeSaqueoDelBarco barco)
+
+--atacarCiudad ciudad barco
 
 
 {-
