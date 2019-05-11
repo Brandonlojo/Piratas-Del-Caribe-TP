@@ -31,6 +31,11 @@ data Isla = Isla {
   botinIsla :: [Tesoro]
 } deriving (Show)
 
+data Ciudad = Ciudad {
+  nombreCiudad :: String,
+  botinCiudad:: [Tesoro]
+} deriving (Show)
+
 -- Piratas
 jackSparrow = Pirata {  nombre = "Jack Sparrow", tesoros = [ Tesoro{ nombreTesoro ="brujula", valorTesoro =10000},
                                                                                                     Tesoro{ nombreTesoro ="frasco de arena", valorTesoro =0}
@@ -62,12 +67,12 @@ islaDelRon = Isla {nombreIsla = " Isla del Ron", botinIsla = [Tesoro {nombreTeso
 
 --Ciudad
 
-portRoyal = Ciudad {nombreCiudad = "Port Royal", tesoros = [Tesoro {nombreTesoro = "Tierra", valorTesoro = 6},
+portRoyal = Ciudad {nombreCiudad = "Port Royal", botinCiudad = [Tesoro {nombreTesoro = "Tierra", valorTesoro = 6},
                                                                                                       Tesoro {nombreTesoro = "Joyas", valorTesoro = 2000},
                                                                                                       Tesoro {nombreTesoro = "Armas", valorTesoro = 150},
-                                                                                                      Tesoro {nombreTesoro = "Ropa", valorTesoro = 50}
+                                                                                                      Tesoro {nombreTesoro = "Ropa", valorTesoro = 50}]
                                                                                                     }
-ciudadMediana = Ciudad {nombreCiudad = "Ciudad Mediana", tesoros = [Tesoro {nombreTesoro = "Joyas", valorTesoro = 2000}]}
+ciudadMediana = Ciudad {nombreCiudad = "Ciudad Mediana", botinCiudad = [Tesoro {nombreTesoro = "Joyas", valorTesoro = 2000}]}
 
 --cantidad de tesoros
 cantidadDeTesoros pirata = (length.tesoros) pirata
@@ -94,14 +99,14 @@ tesoroValioso tesoro = valorTesoro tesoro > 100
 
 
 -- devuelvo un nuevo pirata con la lista de tesoros modificada según la condición (no modifica al existente)
-perderTesoro condicion pirata = Pirata {nombre = (nombre pirata), tesoros = filter (condicion) (tesoros pirata)}
+perderTesoro condicion pirata = pirata {tesoros = filter (condicion) (tesoros pirata)}
 
 --condiciones de perder tesoros
 condicionPorNombreIgual  nombre  tesoro = (nombre/=(nombreTesoro tesoro))
 condicionDeTesorosValiosos tesoro = (not.tesoroValioso) tesoro
 
 --FORMAS DE SAQUEO
-agregarTesoro tesoro pirata = Pirata {nombre = (nombre pirata) , tesoros = tesoro:tesoros pirata}
+agregarTesoro tesoro pirata = pirata {tesoros = tesoro:tesoros pirata}--el MODIFICADO
 
 formaDeSaqueoValioso tesoro= tesoroValioso tesoro
 formaDeSaqueoEspecifico nombre tesoro = nombreTesoro tesoro == nombre
@@ -114,17 +119,19 @@ saquear pirata formaSaqueo tesoro | formaSaqueo  tesoro= agregarTesoro tesoro pi
 
 
 --Navegando los siete mares
-agregarATripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = pirata : (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
-sacarDeTripulacion barco pirata = Barco {nombreBarco = (nombreBarco barco), tripulacion = filter (/= pirata) (tripulacion barco), formaDeSaqueoDelBarco = formaDeSaqueoValioso}
+agregarATripulacion barco pirata = barco {tripulacion = pirata : (tripulacion barco)}
+sacarDeTripulacion barco pirata = barco {tripulacion = filter (/= pirata) (tripulacion barco)}
 
-anclarEnIsla isla barco = Barco {nombreBarco = (nombreBarco barco), tripulacion =map (generarNuevoPirata (botinIsla isla)) (tripulacion barco), formaDeSaqueoDelBarco = (formaDeSaqueoDelBarco barco)}
+anclarEnIsla isla barco = barco {tripulacion =map (generarNuevoPirata (botinIsla isla)) (tripulacion barco)}
 
-generarNuevoPirata tesoro pirata = Pirata {nombre= (nombre pirata), tesoros = (adquirirTesoro tesoro pirata)}
+generarNuevoPirata tesoro pirata = pirata {tesoros = (adquirirTesoro tesoro pirata)}
 
 
-ciudadConTesorosDeSobra ciudad barco =
+--ciudadConTesorosDeSobra ciudad barco = Barco {nombreBarco= (nombreBarco barco), tripulacion =  ,formaDeSaqueoDelBarco= (formaDeSaqueoDelBarco barco)}
 
-any (formaDeSaqueoDelBarco barco)
+--tesorosQueCumplenCondicionDelBarco formaDeSaqueo botinDeCiudad = filter (formaDeSaqueo) botinDeCiudad
+
+--map () pirata
 
 --atacarCiudad ciudad barco
 
