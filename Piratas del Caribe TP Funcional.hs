@@ -28,7 +28,7 @@ data Barco = Barco {
 
 data Isla = Isla {
   nombreIsla :: String,
-  botinIsla :: [Tesoro]
+  botinIsla :: Tesoro
 } deriving (Show)
 
 data Ciudad = Ciudad {
@@ -62,8 +62,8 @@ holandesErrante = Barco {nombreBarco = " Holandés Errante", tripulacion = [davi
 
 --Islas
 
-islaTortuga = Isla {nombreIsla = "Isla Tortuga", botinIsla = [Tesoro {nombreTesoro = "Frasco de arena", valorTesoro = 1}]}
-islaDelRon = Isla {nombreIsla = " Isla del Ron", botinIsla = [Tesoro {nombreTesoro = "Botella de Ron", valorTesoro = 25}]}
+islaTortuga = Isla {nombreIsla = "Isla Tortuga", botinIsla = Tesoro {nombreTesoro = "Frasco de arena", valorTesoro = 1}}
+islaDelRon = Isla {nombreIsla = " Isla del Ron", botinIsla = Tesoro {nombreTesoro = "Botella de Ron", valorTesoro = 25}}
 
 --Ciudad
 
@@ -91,14 +91,11 @@ tienenMismoTesoro pirata1 pirata2 = any (compararTesoros (tesoros pirata2)) (tes
 -- tesoro mas valioso de un pirata
 tesoroMasValioso pirata = maximum ( map valorTesoro (tesoros pirata))
 
--- adquirir un nuevo tesoro (se puede mejorar para cuando es lista de un tesoro o solo un tesoro (guardas))
-adquirirTesoro tesoro pirata = tesoro ++ tesoros pirata
-
 -- verificar si el tesoro es valioso
 tesoroValioso tesoro = valorTesoro tesoro > 100
 
 
--- devuelvo un nuevo pirata con la lista de tesoros modificada según la condición (no modifica al existente)
+-- devuelvo un nuevo pirata con la lista de tesoros modificada según la condición
 perderTesoro condicion pirata = pirata {tesoros = filter (condicion) (tesoros pirata)}
 
 --condiciones de perder tesoros
@@ -106,7 +103,7 @@ condicionPorNombreIgual  nombre  tesoro = (nombre/=(nombreTesoro tesoro))
 condicionDeTesorosValiosos tesoro = (not.tesoroValioso) tesoro
 
 --FORMAS DE SAQUEO
-agregarTesoro tesoro pirata = pirata {tesoros = tesoro:tesoros pirata}--el MODIFICADO
+generarNuevoPirataTesoro tesoro pirata = pirata {tesoros = tesoro:tesoros pirata}
 
 formaDeSaqueoValioso tesoro= tesoroValioso tesoro
 formaDeSaqueoEspecifico nombre tesoro = nombreTesoro tesoro == nombre
@@ -114,7 +111,7 @@ formaDeSaqueoConCorazon tesoro = False
 formaDeSaqueoCompleja listaDeFormas tesoro = any ($ tesoro) listaDeFormas
 --(\tesoro formaDeSaqueo -> formaDeSaqueo tesoro) que equivale a $
 
-saquear pirata formaSaqueo tesoro | formaSaqueo  tesoro= agregarTesoro tesoro pirata
+saquear pirata formaSaqueo tesoro | formaSaqueo  tesoro= generarNuevoPirataTesoro tesoro pirata
                                                          | otherwise = pirata
 
 
@@ -122,21 +119,38 @@ saquear pirata formaSaqueo tesoro | formaSaqueo  tesoro= agregarTesoro tesoro pi
 agregarATripulacion barco pirata = barco {tripulacion = pirata : (tripulacion barco)}
 sacarDeTripulacion barco pirata = barco {tripulacion = filter (/= pirata) (tripulacion barco)}
 
-anclarEnIsla isla barco = barco {tripulacion =map (generarNuevoPirata (botinIsla isla)) (tripulacion barco)}
-
-generarNuevoPirata tesoro pirata = pirata {tesoros = (adquirirTesoro tesoro pirata)}
-
-
---ciudadConTesorosDeSobra ciudad barco = Barco {nombreBarco= (nombreBarco barco), tripulacion =  ,formaDeSaqueoDelBarco= (formaDeSaqueoDelBarco barco)}
-
---tesorosQueCumplenCondicionDelBarco formaDeSaqueo botinDeCiudad = filter (formaDeSaqueo) botinDeCiudad
-
---map () pirata
-
---atacarCiudad ciudad barco
+--Islas
+anclarEnIsla isla barco = barco {tripulacion =map (generarNuevoPirataTesoro (botinIsla isla)) (tripulacion barco)}
 
 
-{-
+--Condiciones para atacar una ciudad
+cantidadDeTesorosDeCiudad ciudad = length (botinCiudad ciudad)
+masTesorosQuePiratas barco ciudad = (cantidadDeTesorosDeCiudad ciudad) > length (tripulacion barco)
+tesorosCumplenCondBarco barco ciudad = filter (formaDeSaqueoDelBarco barco) (botinCiudad ciudad)
+
+barcoConMenosPiratas barco ciudad= barco {tripulacion = take (cantidadDeTesorosDeCiudad ciudad) (tripulacion barco)}
+
+
+--Posibilidades segun disponibilidad de tesoros
+saquearBotinPorOrdenLlegada barco ciudad = barco {tripulacion = zipWith (generarNuevoPirataTesoro) (botinCiudad ciudad) (tripulacion barco)}
+
+
+saquearBotinPorDisponibilidad barco ciudad | masTesorosQuePiratas barco ciudad = saquearBotinPorOrdenLlegada barco ciudad
+                                                                         | otherwise = saquearBotinPorOrdenLlegada (barcoConMenosPiratas barco ciudad) ciudad
+
+
+--Función atacar ciudad teniendo en cuenta todas las condiciones anteriores
+
+atacarCiudad barco ciudad | tesorosCumplenCondBarco barco ciudad /= [] = saquearBotinPorDisponibilidad barco ciudad
+                                            |otherwise = barco
+
+
+
+
+
+
+
+{- TESTs
 Tests de Saqueos
 saquear anneBonny (formaDeSaqueoEspecifico "oro") Tesoro {nombreTesoro = "oro", valorTesoro = 100}
 saquear davidJones formaDeSaqueoConCorazon Tesoro {nombreTesoro = "oro", valorTesoro = 100}
