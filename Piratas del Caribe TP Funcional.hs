@@ -125,7 +125,8 @@ anclarEnIsla isla barco = barco {tripulacion =map (generarNuevoPirataTesoro (bot
 
 --Condiciones para atacar una ciudad
 cantidadDeTesorosDeCiudad ciudad = length (botinCiudad ciudad)
-masTesorosQuePiratas barco ciudad = (cantidadDeTesorosDeCiudad ciudad) > length (tripulacion barco)
+cantidadDePiratasEnTripulacion barco = length (tripulacion barco)
+masTesorosQuePiratas barco ciudad = (cantidadDeTesorosDeCiudad ciudad) > (cantidadDePiratasEnTripulacion barco)
 tesorosCumplenCondBarco barco ciudad = filter (formaDeSaqueoDelBarco barco) (botinCiudad ciudad)
 
 barcoConMenosPiratas barco ciudad= barco {tripulacion = take (cantidadDeTesorosDeCiudad ciudad) (tripulacion barco)}
@@ -145,7 +146,8 @@ atacarCiudad barco ciudad | tesorosCumplenCondBarco barco ciudad /= [] = saquear
                                             |otherwise = barco
 
 
-
+abordarBarco barco1 barco2 | cantidadDePiratasEnTripulacion barco1 > cantidadDePiratasEnTripulacion barco2 =  barco2 {tripulacion = []}
+                                              | cantidadDePiratasEnTripulacion barco1 < cantidadDePiratasEnTripulacion barco2 = barco1 {tripulacion = []}
 
 
 
